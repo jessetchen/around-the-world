@@ -73,7 +73,7 @@ function Stopwatch(elem) {
                 var end_time = formattedTime + " " +  position.coords.latitude + " " +  position.coords.longitude;
 
                 var table = document.getElementById("history");
-                var row = table[tableSize-1];
+                var row = table.rows[tableSize-1];
                 var cell2 = row.insertCell(1);
                 cell2.innerHTML = end_time;
               });

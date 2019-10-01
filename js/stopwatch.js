@@ -3,6 +3,7 @@ function Stopwatch(elem) {
     var interval;
     var offset;
     var tableSize = 1;
+    var table = document.getElementById("history");
 
     function update() {
         if (this.isOn) {
@@ -50,7 +51,7 @@ function Stopwatch(elem) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 var new_row = formattedTime + " " +  position.coords.latitude + " " +  position.coords.longitude;
 
-                var table = document.getElementById("history");
+                //var table = document.getElementById("history");
                 var row = table.insertRow(tableSize);
                 var cell1 = row.insertCell(0);
                 cell1.innerHTML = new_row;
@@ -72,10 +73,9 @@ function Stopwatch(elem) {
                 var end_time = formattedTime + " " +  position.coords.latitude + " " +  position.coords.longitude;
 
                 var table = document.getElementById("history");
-                var row = table.item(0);
+                var row = table[tableSize-1];
                 var cell2 = row.insertCell(1);
                 cell2.innerHTML = end_time;
-                tableSize++;
               });
         }
     };
@@ -83,6 +83,12 @@ function Stopwatch(elem) {
         if (!this.isOn) {
             time = 0;
             update();
+            
+            while (tableSize > 1) {
+                table.deleteRow(tableSize-1);
+                tableSize -= 1;
+                console.log(tableSize);
+            }
         }
         
     };

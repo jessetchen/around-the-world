@@ -1,8 +1,10 @@
 var timer = document.getElementById('timer');
 var toggle = document.getElementById('toggle');
 var reset = document.getElementById('reset');
+var table = document.getElementById("history");
 
 var watch = new Stopwatch(timer);
+
 
 
 toggle.addEventListener('click', function() {

@@ -4,6 +4,7 @@ function Stopwatch(elem) {
     var offset;
     var tableSize = 1;
     var table = document.getElementById("history");
+    var startTime;
 
     function update() {
         if (this.isOn) {
@@ -47,9 +48,10 @@ function Stopwatch(elem) {
             this.isOn = true;
 
             var formattedTime = timeFormatter(time);
+            startTime = time;
 
             navigator.geolocation.getCurrentPosition(function(position) {
-                var new_row = formattedTime + " " +  position.coords.latitude + " " +  position.coords.longitude;
+                var new_row = "time: " + formattedTime + " lat: " +  position.coords.latitude + " lon: " +  position.coords.longitude;
 
                 //var table = document.getElementById("history");
                 var row = table.insertRow(tableSize);
@@ -68,14 +70,15 @@ function Stopwatch(elem) {
             this.isOn = false;
 
             var formattedTime = timeFormatter(time);
+            var elapsed_in_sec = (time - startTime) / 1000;
 
             navigator.geolocation.getCurrentPosition(function(position) {
-                var end_time = formattedTime + " " +  position.coords.latitude + " " +  position.coords.longitude;
+                var end_res = " time: " + formattedTime + " lat: " +  position.coords.latitude + " lon: " +  position.coords.longitude + " time elapsed: " + elapsed_in_sec + " sec";
 
                 var table = document.getElementById("history");
                 var row = table.rows[tableSize-1];
                 var cell2 = row.insertCell(1);
-                cell2.innerHTML = end_time;
+                cell2.innerHTML = end_res;
               });
         }
     };

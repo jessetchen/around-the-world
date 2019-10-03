@@ -13,7 +13,8 @@ Notes
 - if there is no wifi connection, the program uses the latitude and longitude last stored in locl storage
 
 - It usually takes about 3-5 seconds for the first entry to appear in the table
-- But after the first row, consecutive row inserts are very fast
+- Wait for the first row to appear before hitting stop or reset.
+- After the first row, consecutive row inserts are very fast
 - This is likely because it takes a while to obtain the user's location initially before it is cached
 
 - occassionally the very first call to get the user's 

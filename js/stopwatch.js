@@ -10,13 +10,15 @@ function Stopwatch(elem) {
 
     if (storageAvailable('localStorage')) {
         // Yippee! We can use localStorage awesomeness
+        //initialize local storage if not already initialized
         if(!localStorage.getItem('latitude')) {
-            populateStorage(currLat, currLon);
+            window.localStorage.setItem('latitude', currLat);
+            window.localStorage.setItem('longitude', currLon);
           } else {
             currLat = window.localStorage.getItem('latitude');
             currLon = window.localStorage.getItem('longitude');
           }
-        console.log('yes');
+        console.log('storage available');
       }
       else {
         // Too bad, no localStorage for us
@@ -66,7 +68,9 @@ function Stopwatch(elem) {
     //initially set isOn to false
     this.isOn = false;
 
+    //function that starts the stopwatch
     this.start = function() {
+        //only can start if watch is not already on
         if (!this.isOn) {
             interval = setInterval(update.bind(this), 10);
             offset = Date.now();
@@ -76,51 +80,60 @@ function Stopwatch(elem) {
             startTime = time;
             
             var d = new Date();
+            //variable that stores the timezone (in minutes away from UTC)
             var timezone = d.getTimezoneOffset();
 
+            //if online, use user's current geolocation
             if (navigator.onLine) {
                 navigator.geolocation.getCurrentPosition(function(position) {
+                    //call to update table
                     updateTableStart(position.coords.latitude, position.coords.longitude, formattedTime, timezone, tableSize)
                     tableSize++;
+
+                    //store the updated latitude and longitude in local storage for later use
                     window.localStorage.setItem('latitude', position.coords.latitude);
                     window.localStorage.setItem('longitude', position.coords.longitude);
                   });
                   
                 console.log('location available');
             } else {
-                
-                currLat = window.localStorage.getItem('latitude');
-                currLon = window.localStorage.getItem('longitude');
                 updateTableStart(currLat, currLon, formattedTime, timezone, tableSize)
                 tableSize++;
                 console.log('location currently unavailable');
-                console.log(currLat);
             }
-            
-              
-            //populateStorage();
 
             
         }
     };
+
+    //function that stops the stopwatch
     this.stop = function() {
+
+        //only run this if the stopwatch is on
         if (this.isOn) {
             clearInterval(interval);
             interval = null;
             this.isOn = false;
 
             var formattedTime = timeFormatter(time);
+
+            //get elapsed time
             var elapsed_in_sec = (time - startTime) / 1000;
 
             var d = new Date();
+
+            //get current timezone (could have changed as you moved)
             var timezone = d.getTimezoneOffset();
 
+            //if online, use geolocation
             if (navigator.onLine) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     updateTableEnd(position.coords.latitude, position.coords.longitude, formattedTime, elapsed_in_sec, timezone, tableSize);
                     window.localStorage.setItem('latitude', position.coords.latitude);
                     window.localStorage.setItem('longitude', position.coords.longitude);
                   });
+
+            //otherwise use latitude and longitude from local storage
             } else {
                 currLat = window.localStorage.getItem('latitude');
                 currLon = window.localStorage.getItem('longitude');
@@ -131,6 +144,8 @@ function Stopwatch(elem) {
             //populateStorage();
         }
     };
+
+    //reset function that sets the time back to 0, updates the stopwatch text, and clears all the entries in the table
     this.reset = function() {
         if (!this.isOn) {
             time = 0;
@@ -140,14 +155,13 @@ function Stopwatch(elem) {
                 table.deleteRow(tableSize-1);
                 tableSize -= 1;
             }
-            //populateStorage();
         }
         
     };
 };
 
 
-
+//local function that updates the history table with a new entry
 function updateTableStart(lat, lon, formattedTime, timezone, tableSize) {
     var new_row = "Time: " + formattedTime + " / Lat: " +  lat + " / Lon: " +  lon + " / Timezone: " + timezone;
 
@@ -158,6 +172,7 @@ function updateTableStart(lat, lon, formattedTime, timezone, tableSize) {
     //tableSize++;
 }
 
+//local function that updates the history table with the ending cell in the new row
 function updateTableEnd(lat, lon, formattedTime, elapsed_in_sec,timezone, tableSize) {
     var end_res = " Time: " + formattedTime + " / Lat: " +  lat + " / Lon: " +  lon + " / Time Elapsed: " + elapsed_in_sec + " sec" + " / Timezone: " + timezone;
 
@@ -178,6 +193,8 @@ function setPosition() {
     currLat = window.localStorage.getItem('longitude');
 }
 
+
+//local function that checks whether or not local storage is available
 function storageAvailable(type) {
     var storage;
     try {

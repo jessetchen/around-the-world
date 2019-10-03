@@ -7,6 +7,22 @@ function Stopwatch(elem) {
     var startTime;
     var currLat = 'Undefined';
     var currLon = 'Undefined';
+
+    if (storageAvailable('localStorage')) {
+        // Yippee! We can use localStorage awesomeness
+        if(!localStorage.getItem('latitude')) {
+            populateStorage(currLat, currLon);
+          } else {
+            currLat = window.localStorage.getItem('latitude');
+            currLon = window.localStorage.getItem('longitude');
+          }
+        console.log('yes');
+      }
+      else {
+        // Too bad, no localStorage for us
+        console.log('local storage unavailable');
+      }
+      
     
 
     //function that updates the timer text
@@ -66,12 +82,19 @@ function Stopwatch(elem) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     updateTableStart(position.coords.latitude, position.coords.longitude, formattedTime, timezone, tableSize)
                     tableSize++;
+                    window.localStorage.setItem('latitude', position.coords.latitude);
+                    window.localStorage.setItem('longitude', position.coords.longitude);
                   });
+                  
                 console.log('location available');
             } else {
+                
+                currLat = window.localStorage.getItem('latitude');
+                currLon = window.localStorage.getItem('longitude');
                 updateTableStart(currLat, currLon, formattedTime, timezone, tableSize)
                 tableSize++;
                 console.log('location currently unavailable');
+                console.log(currLat);
             }
             
               
@@ -95,8 +118,12 @@ function Stopwatch(elem) {
             if (navigator.onLine) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     updateTableEnd(position.coords.latitude, position.coords.longitude, formattedTime, elapsed_in_sec, timezone, tableSize);
+                    window.localStorage.setItem('latitude', position.coords.latitude);
+                    window.localStorage.setItem('longitude', position.coords.longitude);
                   });
             } else {
+                currLat = window.localStorage.getItem('latitude');
+                currLon = window.localStorage.getItem('longitude');
                 updateTableEnd(currLat, currLon, formattedTime, elapsed_in_sec, timezone, tableSize);
             }
 
@@ -119,21 +146,7 @@ function Stopwatch(elem) {
     };
 };
 
-function populateStorage() {
-    window.localStorage.setItem('history', JSON.stringify(document.getElementById('history').value));
-  }
 
-function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(updateLocation);
-    } else {
-      x.innerHTML = "Geolocation is not supported by this browser.";
-    }
-  }
-function updateLocation(position) {
-    currLat = position.coords.latitude;
-    currLon = position.coords.longitude;
-}
 
 function updateTableStart(lat, lon, formattedTime, timezone, tableSize) {
     var new_row = "Time: " + formattedTime + " / Lat: " +  lat + " / Lon: " +  lon + " / Timezone: " + timezone;
@@ -152,4 +165,40 @@ function updateTableEnd(lat, lon, formattedTime, elapsed_in_sec,timezone, tableS
     var row = table.rows[tableSize-1];
     var cell2 = row.insertCell(1);
     cell2.innerHTML = end_res;
+}
+
+function populateStorage(lat, lon) {
+    window.localStorage.setItem('latitude', lat);
+    window.localStorage.setItem('longitude', lon);
+    setPosition();
+  } 
+
+function setPosition() {
+    currLat = window.localStorage.getItem('latitude');
+    currLat = window.localStorage.getItem('longitude');
+}
+
+function storageAvailable(type) {
+    var storage;
+    try {
+        storage = window[type];
+        var x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
 }

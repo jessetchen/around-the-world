@@ -51,7 +51,7 @@ function Stopwatch(elem) {
             startTime = time;
 
             navigator.geolocation.getCurrentPosition(function(position) {
-                var new_row = "time: " + formattedTime + " lat: " +  position.coords.latitude + " lon: " +  position.coords.longitude;
+                var new_row = "Time: " + formattedTime + " Lat: " +  position.coords.latitude + " Lon: " +  position.coords.longitude;
 
                 //var table = document.getElementById("history");
                 var row = table.insertRow(tableSize);
@@ -73,7 +73,7 @@ function Stopwatch(elem) {
             var elapsed_in_sec = (time - startTime) / 1000;
 
             navigator.geolocation.getCurrentPosition(function(position) {
-                var end_res = " time: " + formattedTime + " lat: " +  position.coords.latitude + " lon: " +  position.coords.longitude + " time elapsed: " + elapsed_in_sec + " sec";
+                var end_res = " Time: " + formattedTime + " Lat: " +  position.coords.latitude + " Lon: " +  position.coords.longitude + " Time Elapsed: " + elapsed_in_sec + " sec";
 
                 var table = document.getElementById("history");
                 var row = table.rows[tableSize-1];

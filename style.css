@@ -23,4 +23,6 @@ button:hover {
 table, th, td {
     margin-top: 25px;
     border: 1px solid black;
+    text-align: left;
+    
   }

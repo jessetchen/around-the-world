@@ -6,13 +6,23 @@ Instructions to build program
 Notes
 - works best in Google chrome
 
+- the timezone is represented in number of minutes away from UTC
+
+- will have to alow access to location each time the user presses start/stop (only when online)
+
+- if there is no wifi connection, the program uses the latitude and longitude last stored in locl storage
+
+- It usually takes about 3-5 seconds for the first entry to appear in the table
+- But after the first row, consecutive row inserts are very fast
+- This is likely because it takes a while to obtain the user's location initially before it is cached
+
 - occassionally the very first call to get the user's 
 location is very slow (around 10-40 second wait) If this happens
 try closing the page and restarting. If this still does not fix it,
 wait a minute after starting the watch and the first entry should eventually appear.
-
 - Note on this: This happens very infrequently and may just be caused
-by bad wifi connection as it usually only takes a second to appear
+by bad wifi connection
 
 - For some reason, the geolocation does not 
 get pulled properly in Safari but it might just be my computer. 
+

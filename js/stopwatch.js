@@ -8,23 +8,11 @@ function Stopwatch(elem) {
     var currLat = 'Undefined';
     var currLon = 'Undefined';
 
-    if (storageAvailable('localStorage')) {
-        // Yippee! We can use localStorage awesomeness
-        //initialize local storage if not already initialized
-        if(!localStorage.getItem('latitude')) {
-            window.localStorage.setItem('latitude', currLat);
-            window.localStorage.setItem('longitude', currLon);
-          } else {
-            currLat = window.localStorage.getItem('latitude');
-            currLon = window.localStorage.getItem('longitude');
-          }
-        console.log('storage available');
-      }
-      else {
-        // Too bad, no localStorage for us
-        console.log('local storage unavailable');
-      }
-      
+    //if nothing in local storage, initialize to current position
+    if(!localStorage.getItem('latitude')) {
+        window.localStorage.setItem('latitude', currLat);
+        window.localStorage.setItem('longitude', currLon);
+    }
     
 
     //function that updates the timer text
@@ -90,13 +78,18 @@ function Stopwatch(elem) {
                     updateTableStart(position.coords.latitude, position.coords.longitude, formattedTime, timezone, tableSize)
                     tableSize++;
 
-                    //store the updated latitude and longitude in local storage for later use
-                    window.localStorage.setItem('latitude', position.coords.latitude);
-                    window.localStorage.setItem('longitude', position.coords.longitude);
+                    //store the updated latitude and longitude in local storage for later use if the location has changed
+                    if (position.coords.latitude != window.localStorage.getItem('latitude')) {
+                        window.localStorage.setItem('latitude', position.coords.latitude);
+                        window.localStorage.setItem('longitude', position.coords.longitude);
+                    }
+                    
                   });
                   
                 console.log('location available');
             } else {
+                currLat = window.localStorage.getItem('latitude');
+                currLon = window.localStorage.getItem('longitude');
                 updateTableStart(currLat, currLon, formattedTime, timezone, tableSize)
                 tableSize++;
                 console.log('location currently unavailable');
@@ -129,8 +122,11 @@ function Stopwatch(elem) {
             if (navigator.onLine) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     updateTableEnd(position.coords.latitude, position.coords.longitude, formattedTime, elapsed_in_sec, timezone, tableSize);
-                    window.localStorage.setItem('latitude', position.coords.latitude);
-                    window.localStorage.setItem('longitude', position.coords.longitude);
+                    
+                    if (position.coords.latitude != window.localStorage.getItem('latitude')) {
+                        window.localStorage.setItem('latitude', position.coords.latitude);
+                        window.localStorage.setItem('longitude', position.coords.longitude);
+                    }
                   });
 
             //otherwise use latitude and longitude from local storage
@@ -180,17 +176,6 @@ function updateTableEnd(lat, lon, formattedTime, elapsed_in_sec,timezone, tableS
     var row = table.rows[tableSize-1];
     var cell2 = row.insertCell(1);
     cell2.innerHTML = end_res;
-}
-
-function populateStorage(lat, lon) {
-    window.localStorage.setItem('latitude', lat);
-    window.localStorage.setItem('longitude', lon);
-    setPosition();
-  } 
-
-function setPosition() {
-    currLat = window.localStorage.getItem('latitude');
-    currLat = window.localStorage.getItem('longitude');
 }
 
 

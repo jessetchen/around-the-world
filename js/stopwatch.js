@@ -24,12 +24,14 @@ function Stopwatch(elem) {
         offset = now;
         return timePassed;
     }
+    //function neatly formats Date time given in miliseconds to fit stopwatch
     function timeFormatter(timeInMilliseconds) {
         var time = new Date(timeInMilliseconds);
         var minutes = time.getMinutes().toString();
         var seconds = time.getSeconds().toString();
         var milliseconds = time.getMilliseconds().toString();
 
+        //these if statements add a 0 to the front of the sections if needed
         if (minutes.length < 2) {
             minutes = '0' + minutes;
         }
@@ -45,6 +47,7 @@ function Stopwatch(elem) {
         return minutes + ' : ' + seconds + ' . ' + milliseconds;
     }
 
+    //initially set isOn to false
     this.isOn = false;
 
     this.start = function() {
@@ -64,11 +67,11 @@ function Stopwatch(elem) {
                     updateTableStart(position.coords.latitude, position.coords.longitude, formattedTime, timezone, tableSize)
                     tableSize++;
                   });
-                console.log('yes');
+                console.log('location available');
             } else {
                 updateTableStart(currLat, currLon, formattedTime, timezone, tableSize)
                 tableSize++;
-                console.log('no');
+                console.log('location currently unavailable');
             }
             
               
@@ -92,7 +95,7 @@ function Stopwatch(elem) {
             if (navigator.onLine) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     updateTableEnd(position.coords.latitude, position.coords.longitude, formattedTime, elapsed_in_sec, timezone, tableSize);
-                  }, showError);
+                  });
             } else {
                 updateTableEnd(currLat, currLon, formattedTime, elapsed_in_sec, timezone, tableSize);
             }

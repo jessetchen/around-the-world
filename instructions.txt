@@ -3,6 +3,13 @@ Instructions to build program
 1. Download entire folder.
 2. Run index.html in a browser (preferrably Google chrome)
 
+
+Assumptions:
+1. Elapsed time is in seconds
+2. Timezone is in minutes away from UTC
+3. table entries are stored as strings
+4. when offline, the program simply uses the latest lat and lon values (from local storage)
+
 Notes
 - works best in Google chrome
 
@@ -10,7 +17,7 @@ Notes
 
 - will have to alow access to location each time the user presses start/stop (only when online)
 
-- if there is no wifi connection, the program uses the latitude and longitude last stored in locl storage
+- if there is no wifi connection, the program uses the latitude and longitude last stored in local storage
 
 - It usually takes about 3-5 seconds for the first entry to appear in the table
 - Wait for the first row to appear before hitting stop or reset.

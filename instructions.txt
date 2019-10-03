@@ -1,4 +1,4 @@
-Instructions to build program. 
+Instructions to build program
 
 1. Download entire folder.
 2. Run index.html in a browser (preferrably Google chrome)
@@ -10,6 +10,7 @@ Notes
 location is very slow (around 10-40 second wait) If this happens
 try closing the page and restarting. If this still does not fix it,
 wait a minute after starting the watch and the first entry should eventually appear.
+
 - Note on this: This happens very infrequently and may just be caused
 by bad wifi connection as it usually only takes a second to appear
 

@@ -5,7 +5,11 @@ function Stopwatch(elem) {
     var tableSize = 1;
     var table = document.getElementById("history");
     var startTime;
+    var currLat = 'Undefined';
+    var currLon = 'Undefined';
+    
 
+    //function that updates the timer text
     function update() {
         if (this.isOn) {
             time += delta();
@@ -13,6 +17,7 @@ function Stopwatch(elem) {
         var formattedTime = timeFormatter(time);
         elem.textContent = formattedTime;
     }
+    //function that returns that amount of time elapsed
     function delta() {
         var now = Date.now();
         var timePassed = now - offset;
@@ -41,6 +46,7 @@ function Stopwatch(elem) {
     }
 
     this.isOn = false;
+
     this.start = function() {
         if (!this.isOn) {
             interval = setInterval(update.bind(this), 10);
@@ -49,16 +55,24 @@ function Stopwatch(elem) {
 
             var formattedTime = timeFormatter(time);
             startTime = time;
+            
+            var d = new Date();
+            var timezone = d.getTimezoneOffset();
 
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var new_row = "Time: " + formattedTime + " Lat: " +  position.coords.latitude + " Lon: " +  position.coords.longitude;
-
-                //var table = document.getElementById("history");
-                var row = table.insertRow(tableSize);
-                var cell1 = row.insertCell(0);
-                cell1.innerHTML = new_row;
+            if (navigator.onLine) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    updateTableStart(position.coords.latitude, position.coords.longitude, formattedTime, timezone, tableSize)
+                    tableSize++;
+                  });
+                console.log('yes');
+            } else {
+                updateTableStart(currLat, currLon, formattedTime, timezone, tableSize)
                 tableSize++;
-              });
+                console.log('no');
+            }
+            
+              
+            //populateStorage();
 
             
         }
@@ -72,14 +86,19 @@ function Stopwatch(elem) {
             var formattedTime = timeFormatter(time);
             var elapsed_in_sec = (time - startTime) / 1000;
 
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var end_res = " Time: " + formattedTime + " Lat: " +  position.coords.latitude + " Lon: " +  position.coords.longitude + " Time Elapsed: " + elapsed_in_sec + " sec";
+            var d = new Date();
+            var timezone = d.getTimezoneOffset();
 
-                var table = document.getElementById("history");
-                var row = table.rows[tableSize-1];
-                var cell2 = row.insertCell(1);
-                cell2.innerHTML = end_res;
-              });
+            if (navigator.onLine) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    updateTableEnd(position.coords.latitude, position.coords.longitude, formattedTime, elapsed_in_sec, timezone, tableSize);
+                  }, showError);
+            } else {
+                updateTableEnd(currLat, currLon, formattedTime, elapsed_in_sec, timezone, tableSize);
+            }
+
+            
+            //populateStorage();
         }
     };
     this.reset = function() {
@@ -90,11 +109,44 @@ function Stopwatch(elem) {
             while (tableSize > 1) {
                 table.deleteRow(tableSize-1);
                 tableSize -= 1;
-                console.log(tableSize);
             }
+            //populateStorage();
         }
         
     };
 };
 
-var watch = new Stopwatch();
+function populateStorage() {
+    window.localStorage.setItem('history', JSON.stringify(document.getElementById('history').value));
+  }
+
+function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(updateLocation);
+    } else {
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+function updateLocation(position) {
+    currLat = position.coords.latitude;
+    currLon = position.coords.longitude;
+}
+
+function updateTableStart(lat, lon, formattedTime, timezone, tableSize) {
+    var new_row = "Time: " + formattedTime + " / Lat: " +  lat + " / Lon: " +  lon + " / Timezone: " + timezone;
+
+    //var table = document.getElementById("history");
+    var row = table.insertRow(tableSize);
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = new_row;
+    //tableSize++;
+}
+
+function updateTableEnd(lat, lon, formattedTime, elapsed_in_sec,timezone, tableSize) {
+    var end_res = " Time: " + formattedTime + " / Lat: " +  lat + " / Lon: " +  lon + " / Time Elapsed: " + elapsed_in_sec + " sec" + " / Timezone: " + timezone;
+
+    var table = document.getElementById("history");
+    var row = table.rows[tableSize-1];
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = end_res;
+}
